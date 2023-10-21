@@ -1,0 +1,74 @@
+import pygame
+import sys
+import random
+
+
+pygame.init()
+
+
+WIDTH, HEIGHT = 800, 600
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+PLAYER_SIZE = 50
+PLAYER_SPEED = 5
+
+
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Simple Game")
+
+player = pygame.image.load("player.png")
+player = pygame.transform.scale(player, (PLAYER_SIZE, PLAYER_SIZE))
+player_x = (WIDTH - PLAYER_SIZE) // 2
+player_y = HEIGHT - PLAYER_SIZE
+
+enemy_size = 50
+enemy_speed = 3
+enemies = []
+for _ in range(5):
+    enemy_x = random.randint(0, WIDTH - enemy_size)
+    enemy_y = random.randint(0, HEIGHT - enemy_size)
+    enemies.append((enemy_x, enemy_y))
+
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        player_x -= PLAYER_SPEED
+    if keys[pygame.K_RIGHT]:
+        player_x += PLAYER_SPEED
+
+ 
+    for i, enemy in enumerate(enemies):
+        enemy_x, enemy_y = enemy
+        enemy_y += enemy_speed
+        if enemy_y > HEIGHT:
+            enemy_x = random.randint(0, WIDTH - enemy_size)
+            enemy_y = -enemy_size
+        enemies[i] = (enemy_x, enemy_y)
+
+    for enemy in enemies:
+        if (
+            player_x < enemy[0] + enemy_size
+            and player_x + PLAYER_SIZE > enemy[0]
+            and player_y < enemy[1] + enemy_size
+            and player_y + PLAYER_SIZE > enemy[1]
+        ):
+            running = False
+
+    # Clear the screen
+    screen.fill(WHITE)
+
+   
+    screen.blit(player, (player_x, player_y))
+    for enemy in enemies:
+        pygame.draw.rect(screen, RED, (*enemy, enemy_size, enemy_size))
+
+    pygame.display.update()
+
+
+pygame.quit()
+sys.exit()
