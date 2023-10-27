@@ -59,7 +59,7 @@ while running:
         ):
             running = False
 
-    # Clear the screen
+  
     screen.fill(WHITE)
 
    
